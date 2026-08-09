@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Convierte y edita PDFs de forma totalmente privada. Tus archivos nunca se suben a ningún servidor. Todo ocurre en tu navegador.">
+  <title>ConfidentialPDF — Conversor de PDF privado y gratuito</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e8eaf0; }
+    header { padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1e2130; }
+    .logo { font-size: 1.2rem; font-weight: 600; color: #fff; }
+    .logo span { color: #4f8ef7; }
+    .badge-privacy { font-size: 12px; background: #1a2a1a; color: #4caf80; border: 1px solid #2a4a2a; padding: 4px 12px; border-radius: 20px; }
+    .hero { text-align: center; padding: 4rem 2rem 3rem; }
+    .hero h1 { font-size: 2.4rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.2; }
+    .hero h1 span { color: #4f8ef7; }
+    .hero p { font-size: 1.1rem; color: #8890a8; max-width: 520px; margin: 0 auto 1.5rem; line-height: 1.6; }
+    .trust-pills { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem; }
+    .pill { font-size: 12px; padding: 5px 14px; border-radius: 20px; background: #1a1f30; border: 1px solid #2a3050; color: #8890a8; }
+    .pill span { color: #4caf80; margin-right: 4px; }
+    .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; max-width: 900px; margin: 0 auto; padding: 0 2rem 4rem; }
+    .tool-card { background: #1a1f30; border: 1px solid #2a3050; border-radius: 12px; padding: 1.5rem 1rem; text-align: center; cursor: pointer; transition: border-color 0.2s, transform 0.2s; text-decoration: none; color: inherit; display: block; }
+    .tool-card:hover { border-color: #4f8ef7; transform: translateY(-2px); }
+    .tool-icon { font-size: 2rem; margin-bottom: 0.75rem; }
+    .tool-name { font-size: 14px; font-weight: 500; color: #e8eaf0; margin-bottom: 4px; }
+    .tool-desc { font-size: 12px; color: #8890a8; }
+    .footer { text-align: center; padding: 2rem; border-top: 1px solid #1e2130; font-size: 13px; color: #4a5068; }
+    .footer a { color: #4a5068; text-decoration: none; margin: 0 8px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Confidential<span>PDF</span></div>
+  <div class="badge-privacy">🔒 Tus archivos nunca se suben</div>
+</header>
+
+<section class="hero">
+  <h1>Convierte PDFs con<br><span>privacidad total</span></h1>
+  <p>Todas las conversiones ocurren directamente en tu navegador. Tus documentos nunca abandonan tu ordenador.</p>
+  <div class="trust-pills">
+    <div class="pill"><span>✓</span>Sin registro</div>
+    <div class="pill"><span>✓</span>Sin límites</div>
+    <div class="pill"><span>✓</span>Sin subir archivos</div>
+    <div class="pill"><span>✓</span>100% gratuito</div>
+    <div class="pill"><span>✓</span>Sin servidor</div>
+  </div>
+</section>
+
+<div class="tools-grid">
+  <a href="/jpg-a-pdf" class="tool-card">
+    <div class="tool-icon">🖼️</div>
+    <div class="tool-name">JPG a PDF</div>
+    <div class="tool-desc">Convierte imágenes a PDF</div>
+  </a>
+  <a href="/word-a-pdf" class="tool-card">
+    <div class="tool-icon">📝</div>
+    <div class="tool-name">Word a PDF</div>
+    <div class="tool-desc">Documentos .docx a PDF</div>
+  </a>
+  <a href="/pdf-a-word" class="tool-card">
+    <div class="tool-icon">📄</div>
+    <div class="tool-name">PDF a Word</div>
+    <div class="tool-desc">Extrae texto editable</div>
+  </a>
+  <a href="/comprimir-pdf" class="tool-card">
+    <div class="tool-icon">🗜️</div>
+    <div class="tool-name">Comprimir PDF</div>
+    <div class="tool-desc">Reduce el tamaño del archivo</div>
+  </a>
+  <a href="/unir-pdf" class="tool-card">
+    <div class="tool-icon">🔗</div>
+    <div class="tool-name">Unir PDFs</div>
+    <div class="tool-desc">Combina varios PDFs en uno</div>
+  </a>
+  <a href="/dividir-pdf" class="tool-card">
+    <div class="tool-icon">✂️</div>
+    <div class="tool-name">Dividir PDF</div>
+    <div class="tool-desc">Separa páginas de un PDF</div>
+  </a>
+  <a href="/pdf-a-jpg" class="tool-card">
+    <div class="tool-icon">🖼️</div>
+    <div class="tool-name">PDF a JPG</div>
+    <div class="tool-desc">Convierte páginas a imagen</div>
+  </a>
+  <a href="/proteger-pdf" class="tool-card">
+    <div class="tool-icon">🔐</div>
+    <div class="tool-name">Proteger PDF</div>
+    <div class="tool-desc">Añade contraseña a tu PDF</div>
+  </a>
+</div>
+
+<footer class="footer">
+  <p>© 2026 ConfidentialPDF · <a href="/privacidad">Privacidad</a> · <a href="/como-funciona">Cómo funciona</a></p>
+  <p style="margin-top:8px">Tus archivos nunca salen de tu navegador. Nunca.</p>
+</footer>
+
+</body>
+</html>
