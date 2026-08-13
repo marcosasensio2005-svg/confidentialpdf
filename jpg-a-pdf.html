@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JPG a PDF gratis y sin subir archivos | ConfidentialPDF</title>
+  <meta name="description" content="Convierte imágenes JPG a PDF gratis. Tus archivos nunca se suben a ningún servidor. Todo ocurre en tu navegador.">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e8eaf0; min-height: 100vh; }
+    header { padding: 1.25rem 2rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1e2130; }
+    .logo { font-size: 1.1rem; font-weight: 600; color: #fff; text-decoration: none; }
+    .logo span { color: #4f8ef7; }
+    .badge { font-size: 12px; background: #1a2a1a; color: #4caf80; border: 1px solid #2a4a2a; padding: 4px 12px; border-radius: 20px; }
+    .hero { text-align: center; padding: 3rem 2rem 2rem; }
+    .hero h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .hero h1 span { color: #4f8ef7; }
+    .hero p { color: #8890a8; font-size: 1rem; max-width: 480px; margin: 0 auto; line-height: 1.6; }
+    .tool-box { max-width: 680px; margin: 2rem auto; padding: 0 1.5rem 4rem; }
+    .drop-zone { border: 2px dashed #2a3050; border-radius: 16px; padding: 3rem 2rem; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; background: #1a1f30; }
+    .drop-zone:hover, .drop-zone.dragover { border-color: #4f8ef7; background: #1a2040; }
+    .drop-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .drop-title { font-size: 1.1rem; font-weight: 500; margin-bottom: 0.5rem; }
+    .drop-sub { font-size: 0.9rem; color: #8890a8; margin-bottom: 1.5rem; }
+    .btn-select { background: #4f8ef7; color: #fff; border: none; padding: 0.75rem 2rem; border-radius: 8px; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+    .btn-select:hover { background: #3a7de8; }
+    #file-input { display: none; }
+    .preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 1.5rem; }
+    .preview-item { background: #1a1f30; border: 1px solid #2a3050; border-radius: 10px; overflow: hidden; position: relative; }
+    .preview-item img { width: 100%; height: 100px; object-fit: cover; display: block; }
+    .preview-item .remove { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.7); border: none; color: #fff; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .preview-name { font-size: 11px; color: #8890a8; padding: 5px 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .actions { margin-top: 1.5rem; display: flex; gap: 10px; align-items: center; }
+    .btn-convert { background: #4caf80; color: #fff; border: none; padding: 0.85rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; flex: 1; }
+    .btn-convert:hover { background: #3d9e70; }
+    .btn-convert:disabled { background: #2a4a3a; color: #4a7a5a; cursor: not-allowed; }
+    .btn-clear { background: #1a1f30; color: #8890a8; border: 1px solid #2a3050; padding: 0.85rem 1.25rem; border-radius: 8px; font-size: 0.9rem; cursor: pointer; }
+    .progress { margin-top: 1.25rem; display: none; }
+    .progress-bar-bg { background: #1a1f30; border-radius: 8px; height: 8px; overflow: hidden; }
+    .progress-bar { background: #4f8ef7; height: 100%; border-radius: 8px; transition: width 0.3s; width: 0%; }
+    .progress-text { font-size: 13px; color: #8890a8; margin-top: 8px; text-align: center; }
+    .result { display: none; margin-top: 1.5rem; background: #1a2a1a; border: 1px solid #2a4a2a; border-radius: 12px; padding: 1.5rem; text-align: center; }
+    .result-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .result-title { font-size: 1.1rem; font-weight: 600; color: #4caf80; margin-bottom: 0.5rem; }
+    .result-sub { font-size: 0.9rem; color: #8890a8; margin-bottom: 1.25rem; }
+    .btn-download { background: #4caf80; color: #fff; border: none; padding: 0.85rem 2.5rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn-download:hover { background: #3d9e70; }
+    .btn-new { background: transparent; color: #4f8ef7; border: 1px solid #4f8ef7; padding: 0.85rem 1.5rem; border-radius: 8px; font-size: 0.9rem; cursor: pointer; margin-left: 10px; }
+    .privacy-note { background: #0f1a0f; border: 1px solid #1a3a1a; border-radius: 10px; padding: 1rem 1.25rem; margin-top: 2rem; display: flex; gap: 10px; align-items: flex-start; }
+    .privacy-note .icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+    .privacy-note p { font-size: 13px; color: #6a9a6a; line-height: 1.5; }
+    .back-link { display: inline-block; color: #8890a8; text-decoration: none; font-size: 13px; margin-bottom: 1rem; }
+    .back-link:hover { color: #e8eaf0; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="logo">Confidential<span>PDF</span></a>
+  <div class="badge">🔒 Sin subir archivos</div>
+</header>
+
+<section class="hero">
+  <h1>Convierte <span>JPG a PDF</span> gratis</h1>
+  <p>Selecciona una o varias imágenes y las convertimos a PDF directamente en tu navegador. Cero uploads.</p>
+</section>
+
+<div class="tool-box">
+  <a href="/" class="back-link">← Todas las herramientas</a>
+
+  <div class="drop-zone" id="dropZone">
+    <div class="drop-icon">🖼️</div>
+    <div class="drop-title">Arrastra tus imágenes aquí</div>
+    <div class="drop-sub">JPG, JPEG, PNG — una o varias a la vez</div>
+    <button class="btn-select" onclick="document.getElementById('file-input').click()">Seleccionar imágenes</button>
+    <input type="file" id="file-input" accept="image/jpeg,image/png,image/jpg" multiple>
+  </div>
+
+  <div class="preview-grid" id="previewGrid"></div>
+
+  <div class="actions" id="actions" style="display:none">
+    <button class="btn-convert" id="btnConvert" onclick="convertToPDF()">🔄 Convertir a PDF</button>
+    <button class="btn-clear" onclick="clearAll()">Limpiar</button>
+  </div>
+
+  <div class="progress" id="progress">
+    <div class="progress-bar-bg"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-text" id="progressText">Procesando...</div>
+  </div>
+
+  <div class="result" id="result">
+    <div class="result-icon">✅</div>
+    <div class="result-title">¡PDF creado con éxito!</div>
+    <div class="result-sub">Tu archivo está listo. Nunca ha salido de tu navegador.</div>
+    <a class="btn-download" id="btnDownload" href="#" download="confidentialpdf.pdf">⬇️ Descargar PDF</a>
+    <button class="btn-new" onclick="clearAll()">Convertir más</button>
+  </div>
+
+  <div class="privacy-note">
+    <div class="icon">🔒</div>
+    <p>Tus imágenes <strong>nunca se suben a ningún servidor</strong>. Todo el proceso ocurre localmente en tu navegador usando JavaScript. Ni nosotros ni nadie puede ver tus archivos.</p>
+  </div>
+</div>
+
+<script>
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('file-input');
+  const previewGrid = document.getElementById('previewGrid');
+  const actions = document.getElementById('actions');
+  let selectedFiles = [];
+
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+  fileInput.addEventListener('change', e => handleFiles(e.target.files));
+
+  function handleFiles(files) {
+    [...files].forEach(file => {
+      if (!file.type.startsWith('image/')) return;
+      selectedFiles.push(file);
+      const reader = new FileReader();
+      reader.onload = e => {
+        const item = document.createElement('div');
+        item.className = 'preview-item';
+        item.dataset.index = selectedFiles.length - 1;
+        item.innerHTML = `<img src="${e.target.result}"><button class="remove" onclick="removeFile(${selectedFiles.length-1})">✕</button><div class="preview-name">${file.name}</div>`;
+        previewGrid.appendChild(item);
+      };
+      reader.readAsDataURL(file);
+    });
+    if (selectedFiles.length > 0) actions.style.display = 'flex';
+  }
+
+  function removeFile(index) {
+    selectedFiles[index] = null;
+    const items = previewGrid.querySelectorAll('.preview-item');
+    items.forEach(item => { if (parseInt(item.dataset.index) === index) item.remove(); });
+    if (selectedFiles.filter(f => f !== null).length === 0) actions.style.display = 'none';
+  }
+
+  function clearAll() {
+    selectedFiles = [];
+    previewGrid.innerHTML = '';
+    actions.style.display = 'none';
+    document.getElementById('progress').style.display = 'none';
+    document.getElementById('result').style.display = 'none';
+    fileInput.value = '';
+  }
+
+  async function convertToPDF() {
+    const files = selectedFiles.filter(f => f !== null);
+    if (files.length === 0) return;
+
+    const btn = document.getElementById('btnConvert');
+    const progress = document.getElementById('progress');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+
+    btn.disabled = true;
+    progress.style.display = 'block';
+    document.getElementById('result').style.display = 'none';
+
+    const pdfDoc = await PDFLib.PDFDocument.create();
+
+    for (let i = 0; i < files.length; i++) {
+      progressText.textContent = `Procesando imagen ${i + 1} de ${files.length}...`;
+      progressBar.style.width = `${((i + 1) / files.length) * 90}%`;
+
+      const arrayBuffer = await files[i].arrayBuffer();
+      let img;
+      if (files[i].type === 'image/png') {
+        img = await pdfDoc.embedPng(arrayBuffer);
+      } else {
+        img = await pdfDoc.embedJpg(arrayBuffer);
+      }
+      const page = pdfDoc.addPage([img.width, img.height]);
+      page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
+    }
+
+    progressText.textContent = 'Generando PDF...';
+    progressBar.style.width = '100%';
+
+    const pdfBytes = await pdfDoc.save();
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+
+    document.getElementById('btnDownload').href = url;
+    progress.style.display = 'none';
+    document.getElementById('result').style.display = 'block';
+    btn.disabled = false;
+  }
+</script>
+
+</body>
+</html>
