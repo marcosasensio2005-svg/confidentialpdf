@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unir PDFs gratis y sin subir archivos | ConfidentialPDF</title>
+  <meta name="description" content="Combina varios PDFs en uno gratis. Tus archivos nunca se suben a ningún servidor. Todo ocurre en tu navegador.">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e8eaf0; min-height: 100vh; }
+    header { padding: 1.25rem 2rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1e2130; }
+    .logo { font-size: 1.1rem; font-weight: 600; color: #fff; text-decoration: none; }
+    .logo span { color: #4f8ef7; }
+    .badge { font-size: 12px; background: #1a2a1a; color: #4caf80; border: 1px solid #2a4a2a; padding: 4px 12px; border-radius: 20px; }
+    .hero { text-align: center; padding: 3rem 2rem 2rem; }
+    .hero h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .hero h1 span { color: #4f8ef7; }
+    .hero p { color: #8890a8; font-size: 1rem; max-width: 480px; margin: 0 auto; line-height: 1.6; }
+    .tool-box { max-width: 680px; margin: 2rem auto; padding: 0 1.5rem 4rem; }
+    .drop-zone { border: 2px dashed #2a3050; border-radius: 16px; padding: 3rem 2rem; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; background: #1a1f30; }
+    .drop-zone:hover, .drop-zone.dragover { border-color: #4f8ef7; background: #1a2040; }
+    .drop-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .drop-title { font-size: 1.1rem; font-weight: 500; margin-bottom: 0.5rem; }
+    .drop-sub { font-size: 0.9rem; color: #8890a8; margin-bottom: 1.5rem; }
+    .btn-select { background: #4f8ef7; color: #fff; border: none; padding: 0.75rem 2rem; border-radius: 8px; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+    .btn-select:hover { background: #3a7de8; }
+    #file-input { display: none; }
+    .files-list { margin-top: 1.5rem; display: none; }
+    .files-list.visible { display: block; }
+    .files-list-title { font-size: 13px; color: #8890a8; margin-bottom: 10px; }
+    .file-item { background: #1a1f30; border: 1px solid #2a3050; border-radius: 10px; padding: 0.85rem 1rem; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .file-item-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .file-item-info { flex: 1; }
+    .file-item-name { font-size: 13px; font-weight: 500; color: #e8eaf0; }
+    .file-item-size { font-size: 11px; color: #8890a8; margin-top: 2px; }
+    .file-item-remove { background: none; border: none; color: #8890a8; cursor: pointer; font-size: 16px; padding: 4px; }
+    .file-item-remove:hover { color: #e8eaf0; }
+    .add-more { background: #1a1f30; border: 1px dashed #2a3050; border-radius: 10px; padding: 0.75rem; text-align: center; cursor: pointer; font-size: 13px; color: #8890a8; margin-top: 4px; transition: border-color 0.2s; }
+    .add-more:hover { border-color: #4f8ef7; color: #4f8ef7; }
+    .order-hint { font-size: 12px; color: #6a7090; margin-top: 8px; text-align: center; }
+    .actions { margin-top: 1.5rem; display: none; }
+    .btn-convert { background: #4caf80; color: #fff; border: none; padding: 0.85rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; width: 100%; }
+    .btn-convert:hover { background: #3d9e70; }
+    .btn-convert:disabled { background: #2a4a3a; color: #4a7a5a; cursor: not-allowed; }
+    .progress { margin-top: 1.25rem; display: none; }
+    .progress-bar-bg { background: #1a1f30; border-radius: 8px; height: 8px; overflow: hidden; }
+    .progress-bar { background: #4f8ef7; height: 100%; border-radius: 8px; transition: width 0.3s; width: 0%; }
+    .progress-text { font-size: 13px; color: #8890a8; margin-top: 8px; text-align: center; }
+    .result { display: none; margin-top: 1.5rem; background: #1a2a1a; border: 1px solid #2a4a2a; border-radius: 12px; padding: 1.5rem; text-align: center; }
+    .result-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .result-title { font-size: 1.1rem; font-weight: 600; color: #4caf80; margin-bottom: 0.5rem; }
+    .result-sub { font-size: 0.9rem; color: #8890a8; margin-bottom: 1.25rem; }
+    .btn-download { background: #4caf80; color: #fff; border: none; padding: 0.85rem 2.5rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn-download:hover { background: #3d9e70; }
+    .btn-new { background: transparent; color: #4f8ef7; border: 1px solid #4f8ef7; padding: 0.85rem 1.5rem; border-radius: 8px; font-size: 0.9rem; cursor: pointer; margin-left: 10px; }
+    .privacy-note { background: #0f1a0f; border: 1px solid #1a3a1a; border-radius: 10px; padding: 1rem 1.25rem; margin-top: 2rem; display: flex; gap: 10px; align-items: flex-start; }
+    .privacy-note .icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+    .privacy-note p { font-size: 13px; color: #6a9a6a; line-height: 1.5; }
+    .back-link { display: inline-block; color: #8890a8; text-decoration: none; font-size: 13px; margin-bottom: 1rem; }
+    .back-link:hover { color: #e8eaf0; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="logo">Confidential<span>PDF</span></a>
+  <div class="badge">🔒 Sin subir archivos</div>
+</header>
+
+<section class="hero">
+  <h1>Unir <span>PDFs</span> gratis</h1>
+  <p>Combina varios archivos PDF en uno solo. Todo ocurre en tu navegador, sin subir nada a ningún servidor.</p>
+</section>
+
+<div class="tool-box">
+  <a href="/" class="back-link">← Todas las herramientas</a>
+
+  <div class="drop-zone" id="dropZone">
+    <div class="drop-icon">🔗</div>
+    <div class="drop-title">Arrastra tus PDFs aquí</div>
+    <div class="drop-sub">Selecciona 2 o más archivos PDF</div>
+    <button class="btn-select" onclick="document.getElementById('file-input').click()">Seleccionar PDFs</button>
+    <input type="file" id="file-input" accept=".pdf" multiple>
+  </div>
+
+  <div class="files-list" id="filesList">
+    <div class="files-list-title">Archivos a unir — en este orden:</div>
+    <div id="filesContainer"></div>
+    <div class="add-more" onclick="document.getElementById('file-input').click()">+ Añadir más PDFs</div>
+    <div class="order-hint">Los PDFs se unirán en el orden que aparecen arriba</div>
+  </div>
+
+  <div class="actions" id="actions">
+    <button class="btn-convert" id="btnConvert" onclick="unirPDFs()">🔗 Unir PDFs</button>
+  </div>
+
+  <div class="progress" id="progress">
+    <div class="progress-bar-bg"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-text" id="progressText">Uniendo PDFs...</div>
+  </div>
+
+  <div class="result" id="result">
+    <div class="result-icon">✅</div>
+    <div class="result-title">¡PDFs unidos con éxito!</div>
+    <div class="result-sub" id="resultSub">Tu archivo combinado está listo.</div>
+    <a class="btn-download" id="btnDownload" href="#" download="unidos.pdf">⬇️ Descargar PDF</a>
+    <button class="btn-new" onclick="clearAll()">Unir otros</button>
+  </div>
+
+  <div class="privacy-note">
+    <div class="icon">🔒</div>
+    <p>Tus PDFs <strong>nunca se suben a ningún servidor</strong>. Todo el proceso ocurre localmente en tu navegador. Ni nosotros ni nadie puede ver tus archivos.</p>
+  </div>
+</div>
+
+<script>
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('file-input');
+  const filesContainer = document.getElementById('filesContainer');
+  let selectedFiles = [];
+
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+  fileInput.addEventListener('change', e => handleFiles(e.target.files));
+
+  function handleFiles(files) {
+    [...files].forEach(file => {
+      if (!file || file.type !== 'application/pdf') return;
+      selectedFiles.push(file);
+    });
+    renderFilesList();
+  }
+
+  function renderFilesList() {
+    filesContainer.innerHTML = '';
+    selectedFiles.forEach((file, index) => {
+      const item = document.createElement('div');
+      item.className = 'file-item';
+      item.innerHTML = `
+        <div class="file-item-icon">📄</div>
+        <div class="file-item-info">
+          <div class="file-item-name">${index + 1}. ${file.name}</div>
+          <div class="file-item-size">${formatSize(file.size)}</div>
+        </div>
+        <button class="file-item-remove" onclick="removeFile(${index})">✕</button>
+      `;
+      filesContainer.appendChild(item);
+    });
+
+    if (selectedFiles.length >= 2) {
+      document.getElementById('filesList').classList.add('visible');
+      document.getElementById('actions').style.display = 'block';
+    } else if (selectedFiles.length === 1) {
+      document.getElementById('filesList').classList.add('visible');
+      document.getElementById('actions').style.display = 'none';
+    } else {
+      document.getElementById('filesList').classList.remove('visible');
+      document.getElementById('actions').style.display = 'none';
+    }
+  }
+
+  function removeFile(index) {
+    selectedFiles.splice(index, 1);
+    renderFilesList();
+  }
+
+  function clearAll() {
+    selectedFiles = [];
+    filesContainer.innerHTML = '';
+    document.getElementById('filesList').classList.remove('visible');
+    document.getElementById('actions').style.display = 'none';
+    document.getElementById('progress').style.display = 'none';
+    document.getElementById('result').style.display = 'none';
+    fileInput.value = '';
+  }
+
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+  }
+
+  async function unirPDFs() {
+    if (selectedFiles.length < 2) return;
+    const btn = document.getElementById('btnConvert');
+    const progress = document.getElementById('progress');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+
+    btn.disabled = true;
+    progress.style.display = 'block';
+    document.getElementById('result').style.display = 'none';
+
+    const mergedPdf = await PDFLib.PDFDocument.create();
+
+    for (let i = 0; i < selectedFiles.length; i++) {
+      progressBar.style.width = `${((i + 1) / selectedFiles.length) * 90}%`;
+      progressText.textContent = `Uniendo PDF ${i + 1} de ${selectedFiles.length}...`;
+      const arrayBuffer = await selectedFiles[i].arrayBuffer();
+      const pdf = await PDFLib.PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+      const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+      pages.forEach(page => mergedPdf.addPage(page));
+    }
+
+    progressBar.style.width = '100%';
+    progressText.textContent = 'Generando PDF final...';
+
+    const pdfBytes = await mergedPdf.save();
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+
+    const totalPages = mergedPdf.getPageCount();
+    document.getElementById('resultSub').textContent = `${selectedFiles.length} PDFs unidos — ${totalPages} páginas en total. Nunca ha salido de tu navegador.`;
+    document.getElementById('btnDownload').href = url;
+
+    progress.style.display = 'none';
+    document.getElementById('result').style.display = 'block';
+    btn.disabled = false;
+  }
+</script>
+
+</body>
+</html>
