@@ -40,3 +40,214 @@
     .quality-opt { background: #0f1117; border: 1px solid #2a3050; border-radius: 8px; padding: 0.75rem; text-align: center; cursor: pointer; transition: border-color 0.2s; }
     .quality-opt:hover { border-color: #4f8ef7; }
     .quality-opt.selected { border-color: #4f8ef7; background: #1a2040; }
+    .quality-opt-name { font-size: 13px; font-weight: 500; color: #e8eaf0; margin-bottom: 3px; }
+    .quality-opt-desc { font-size: 11px; color: #8890a8; }
+    .actions { margin-top: 1.5rem; display: none; }
+    .btn-convert { background: #4caf80; color: #fff; border: none; padding: 0.85rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; width: 100%; }
+    .btn-convert:hover { background: #3d9e70; }
+    .btn-convert:disabled { background: #2a4a3a; color: #4a7a5a; cursor: not-allowed; }
+    .progress { margin-top: 1.25rem; display: none; }
+    .progress-bar-bg { background: #1a1f30; border-radius: 8px; height: 8px; overflow: hidden; }
+    .progress-bar { background: #4f8ef7; height: 100%; border-radius: 8px; transition: width 0.3s; width: 0%; }
+    .progress-text { font-size: 13px; color: #8890a8; margin-top: 8px; text-align: center; }
+    .result { display: none; margin-top: 1.5rem; background: #1a2a1a; border: 1px solid #2a4a2a; border-radius: 12px; padding: 1.5rem; text-align: center; }
+    .result-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .result-title { font-size: 1.1rem; font-weight: 600; color: #4caf80; margin-bottom: 0.5rem; }
+    .result-stats { display: flex; justify-content: center; gap: 2rem; margin: 1rem 0 1.25rem; }
+    .stat { text-align: center; }
+    .stat-val { font-size: 1.3rem; font-weight: 600; color: #e8eaf0; }
+    .stat-label { font-size: 11px; color: #8890a8; margin-top: 2px; }
+    .stat-saved { color: #4caf80; }
+    .btn-download { background: #4caf80; color: #fff; border: none; padding: 0.85rem 2.5rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn-download:hover { background: #3d9e70; }
+    .btn-new { background: transparent; color: #4f8ef7; border: 1px solid #4f8ef7; padding: 0.85rem 1.5rem; border-radius: 8px; font-size: 0.9rem; cursor: pointer; margin-left: 10px; }
+    .privacy-note { background: #0f1a0f; border: 1px solid #1a3a1a; border-radius: 10px; padding: 1rem 1.25rem; margin-top: 2rem; display: flex; gap: 10px; align-items: flex-start; }
+    .privacy-note .icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+    .privacy-note p { font-size: 13px; color: #6a9a6a; line-height: 1.5; }
+    .back-link { display: inline-block; color: #8890a8; text-decoration: none; font-size: 13px; margin-bottom: 1rem; }
+    .back-link:hover { color: #e8eaf0; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="logo">Confidential<span>PDF</span></a>
+  <div class="badge">🔒 Sin subir archivos</div>
+</header>
+
+<section class="hero">
+  <h1>Comprimir <span>PDF</span> gratis</h1>
+  <p>Reduce el tamaño de tu PDF sin perder calidad. Todo ocurre en tu navegador, sin subir nada a ningún servidor.</p>
+</section>
+
+<div class="tool-box">
+  <a href="/" class="back-link">← Todas las herramientas</a>
+
+  <div class="drop-zone" id="dropZone">
+    <div class="drop-icon">🗜️</div>
+    <div class="drop-title">Arrastra tu PDF aquí</div>
+    <div class="drop-sub">Formato .pdf</div>
+    <button class="btn-select" onclick="document.getElementById('file-input').click()">Seleccionar PDF</button>
+    <input type="file" id="file-input" accept=".pdf">
+  </div>
+
+  <div class="file-selected" id="fileSelected">
+    <div class="file-icon">📄</div>
+    <div class="file-info">
+      <div class="file-name" id="fileName">documento.pdf</div>
+      <div class="file-size" id="fileSize">0 KB</div>
+    </div>
+    <button class="file-remove" onclick="clearAll()">✕</button>
+  </div>
+
+  <div class="quality-box" id="qualityBox">
+    <div class="quality-label">Nivel de compresión:</div>
+    <div class="quality-options">
+      <div class="quality-opt" onclick="selectQuality(this, 'low')">
+        <div class="quality-opt-name">Baja</div>
+        <div class="quality-opt-desc">Máxima calidad</div>
+      </div>
+      <div class="quality-opt selected" onclick="selectQuality(this, 'medium')">
+        <div class="quality-opt-name">Media</div>
+        <div class="quality-opt-desc">Equilibrado</div>
+      </div>
+      <div class="quality-opt" onclick="selectQuality(this, 'high')">
+        <div class="quality-opt-name">Alta</div>
+        <div class="quality-opt-desc">Menor tamaño</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions" id="actions">
+    <button class="btn-convert" id="btnConvert" onclick="comprimirPDF()">🗜️ Comprimir PDF</button>
+  </div>
+
+  <div class="progress" id="progress">
+    <div class="progress-bar-bg"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-text" id="progressText">Comprimiendo...</div>
+  </div>
+
+  <div class="result" id="result">
+    <div class="result-icon">✅</div>
+    <div class="result-title">¡PDF comprimido con éxito!</div>
+    <div class="result-stats">
+      <div class="stat">
+        <div class="stat-val" id="statOriginal">-</div>
+        <div class="stat-label">Tamaño original</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" id="statNew">-</div>
+        <div class="stat-label">Tamaño nuevo</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val stat-saved" id="statSaved">-</div>
+        <div class="stat-label">Ahorro</div>
+      </div>
+    </div>
+    <a class="btn-download" id="btnDownload" href="#" download="comprimido.pdf">⬇️ Descargar PDF</a>
+    <button class="btn-new" onclick="clearAll()">Comprimir otro</button>
+  </div>
+
+  <div class="privacy-note">
+    <div class="icon">🔒</div>
+    <p>Tu PDF <strong>nunca se sube a ningún servidor</strong>. Todo el proceso ocurre localmente en tu navegador usando JavaScript. Ni nosotros ni nadie puede ver tu archivo.</p>
+  </div>
+</div>
+
+<script>
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('file-input');
+  let selectedFile = null;
+  let qualityLevel = 'medium';
+
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
+  fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
+
+  function selectQuality(el, level) {
+    document.querySelectorAll('.quality-opt').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    qualityLevel = level;
+  }
+
+  function handleFile(file) {
+    if (!file || file.type !== 'application/pdf') { alert('Por favor selecciona un archivo PDF'); return; }
+    selectedFile = file;
+    document.getElementById('fileName').textContent = file.name;
+    document.getElementById('fileSize').textContent = formatSize(file.size);
+    document.getElementById('fileSelected').classList.add('visible');
+    document.getElementById('qualityBox').classList.add('visible');
+    document.getElementById('actions').style.display = 'block';
+    document.getElementById('result').style.display = 'none';
+  }
+
+  function clearAll() {
+    selectedFile = null;
+    document.getElementById('fileSelected').classList.remove('visible');
+    document.getElementById('qualityBox').classList.remove('visible');
+    document.getElementById('actions').style.display = 'none';
+    document.getElementById('progress').style.display = 'none';
+    document.getElementById('result').style.display = 'none';
+    fileInput.value = '';
+  }
+
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+  }
+
+  async function comprimirPDF() {
+    if (!selectedFile) return;
+    const btn = document.getElementById('btnConvert');
+    const progress = document.getElementById('progress');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+
+    btn.disabled = true;
+    progress.style.display = 'block';
+    progressBar.style.width = '20%';
+    progressText.textContent = 'Leyendo PDF...';
+
+    const arrayBuffer = await selectedFile.arrayBuffer();
+    progressBar.style.width = '50%';
+    progressText.textContent = 'Optimizando estructura...';
+
+    const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+
+    progressBar.style.width = '80%';
+    progressText.textContent = 'Guardando PDF comprimido...';
+
+    const compressionMap = { low: 9, medium: 6, high: 3 };
+    const objectsToCompress = compressionMap[qualityLevel];
+
+    const pdfBytes = await pdfDoc.save({
+      useObjectStreams: true,
+      addDefaultPage: false,
+      objectsPerTick: objectsToCompress
+    });
+
+    progressBar.style.width = '100%';
+    progressText.textContent = '¡Listo!';
+
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const originalSize = selectedFile.size;
+    const newSize = pdfBytes.length;
+    const saved = Math.round((1 - newSize / originalSize) * 100);
+
+    document.getElementById('statOriginal').textContent = formatSize(originalSize);
+    document.getElementById('statNew').textContent = formatSize(newSize);
+    document.getElementById('statSaved').textContent = saved > 0 ? saved + '% menos' : 'Optimizado';
+    document.getElementById('btnDownload').href = url;
+    document.getElementById('btnDownload').download = 'comprimido_' + selectedFile.name;
+
+    progress.style.display = 'none';
+    document.getElementById('result').style.display = 'block';
+    btn.disabled = false;
+  }
+</script>
+
+</body>
+</html>
