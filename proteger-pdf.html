@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proteger PDF con contraseña gratis | ConfidentialPDF</title>
+  <meta name="description" content="Añade una contraseña a tu PDF gratis. Tus archivos nunca se suben a ningún servidor. Todo ocurre en tu navegador.">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e8eaf0; min-height: 100vh; }
+    header { padding: 1.25rem 2rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1e2130; }
+    .logo { font-size: 1.1rem; font-weight: 600; color: #fff; text-decoration: none; }
+    .logo span { color: #4f8ef7; }
+    .badge { font-size: 12px; background: #1a2a1a; color: #4caf80; border: 1px solid #2a4a2a; padding: 4px 12px; border-radius: 20px; }
+    .hero { text-align: center; padding: 3rem 2rem 2rem; }
+    .hero h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .hero h1 span { color: #4f8ef7; }
+    .hero p { color: #8890a8; font-size: 1rem; max-width: 480px; margin: 0 auto; line-height: 1.6; }
+    .tool-box { max-width: 680px; margin: 2rem auto; padding: 0 1.5rem 4rem; }
+    .drop-zone { border: 2px dashed #2a3050; border-radius: 16px; padding: 3rem 2rem; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; background: #1a1f30; }
+    .drop-zone:hover, .drop-zone.dragover { border-color: #4f8ef7; background: #1a2040; }
+    .drop-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .drop-title { font-size: 1.1rem; font-weight: 500; margin-bottom: 0.5rem; }
+    .drop-sub { font-size: 0.9rem; color: #8890a8; margin-bottom: 1.5rem; }
+    .btn-select { background: #4f8ef7; color: #fff; border: none; padding: 0.75rem 2rem; border-radius: 8px; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+    .btn-select:hover { background: #3a7de8; }
+    #file-input { display: none; }
+    .file-selected { margin-top: 1.5rem; background: #1a1f30; border: 1px solid #2a3050; border-radius: 10px; padding: 1rem 1.25rem; display: none; align-items: center; gap: 12px; }
+    .file-selected.visible { display: flex; }
+    .file-icon { font-size: 2rem; flex-shrink: 0; }
+    .file-info { flex: 1; }
+    .file-name { font-size: 14px; font-weight: 500; color: #e8eaf0; }
+    .file-size { font-size: 12px; color: #8890a8; margin-top: 2px; }
+    .file-remove { background: none; border: none; color: #8890a8; cursor: pointer; font-size: 18px; }
+    .password-box { margin-top: 1.5rem; background: #1a1f30; border: 1px solid #2a3050; border-radius: 10px; padding: 1.25rem; display: none; }
+    .password-box.visible { display: block; }
+    .pass-label { font-size: 13px; color: #8890a8; margin-bottom: 8px; }
+    .pass-input-row { position: relative; margin-bottom: 1rem; }
+    input[type="password"], input[type="text"] { background: #0f1117; border: 1px solid #2a3050; border-radius: 8px; padding: 0.75rem 2.5rem 0.75rem 0.9rem; color: #e8eaf0; font-size: 14px; width: 100%; outline: none; transition: border-color 0.2s; }
+    input:focus { border-color: #4f8ef7; }
+    .toggle-pass { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #8890a8; cursor: pointer; font-size: 16px; }
+    .strength-bar-bg { height: 4px; background: #0f1117; border-radius: 2px; margin-top: 6px; overflow: hidden; }
+    .strength-bar { height: 100%; border-radius: 2px; transition: width 0.3s, background 0.3s; width: 0%; }
+    .strength-text { font-size: 11px; margin-top: 4px; }
+    .perms-title { font-size: 13px; color: #8890a8; margin: 1rem 0 8px; }
+    .perm-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; cursor: pointer; }
+    .perm-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: #4f8ef7; cursor: pointer; }
+    .perm-item label { font-size: 13px; color: #e8eaf0; cursor: pointer; }
+    .perm-item span { font-size: 11px; color: #8890a8; }
+    .actions { margin-top: 1.5rem; display: none; }
+    .btn-convert { background: #4caf80; color: #fff; border: none; padding: 0.85rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; width: 100%; }
+    .btn-convert:hover { background: #3d9e70; }
+    .btn-convert:disabled { background: #2a4a3a; color: #4a7a5a; cursor: not-allowed; }
+    .progress { margin-top: 1.25rem; display: none; }
+    .progress-bar-bg { background: #1a1f30; border-radius: 8px; height: 8px; overflow: hidden; }
+    .progress-bar { background: #4f8ef7; height: 100%; border-radius: 8px; transition: width 0.3s; width: 0%; }
+    .progress-text { font-size: 13px; color: #8890a8; margin-top: 8px; text-align: center; }
+    .result { display: none; margin-top: 1.5rem; background: #1a2a1a; border: 1px solid #2a4a2a; border-radius: 12px; padding: 1.5rem; text-align: center; }
+    .result-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .result-title { font-size: 1.1rem; font-weight: 600; color: #4caf80; margin-bottom: 0.5rem; }
+    .result-sub { font-size: 0.9rem; color: #8890a8; margin-bottom: 1.25rem; }
+    .btn-download { background: #4caf80; color: #fff; border: none; padding: 0.85rem 2.5rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn-download:hover { background: #3d9e70; }
+    .btn-new { background: transparent; color: #4f8ef7; border: 1px solid #4f8ef7; padding: 0.85rem 1.5rem; border-radius: 8px; font-size: 0.9rem; cursor: pointer; margin-left: 10px; }
+    .privacy-note { background: #0f1a0f; border: 1px solid #1a3a1a; border-radius: 10px; padding: 1rem 1.25rem; margin-top: 2rem; display: flex; gap: 10px; align-items: flex-start; }
+    .privacy-note .icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+    .privacy-note p { font-size: 13px; color: #6a9a6a; line-height: 1.5; }
+    .back-link { display: inline-block; color: #8890a8; text-decoration: none; font-size: 13px; margin-bottom: 1rem; }
+    .back-link:hover { color: #e8eaf0; }
+    .warn-box { background: #1a1200; border: 1px solid #3a3000; border-radius: 10px; padding: 0.85rem 1rem; margin-top: 1rem; font-size: 12px; color: #9a8a40; line-height: 1.5; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="logo">Confidential<span>PDF</span></a>
+  <div class="badge">🔒 Sin subir archivos</div>
+</header>
+
+<section class="hero">
+  <h1>Proteger <span>PDF</span> con contraseña</h1>
+  <p>Añade una contraseña a tu PDF gratis. Todo ocurre en tu navegador, sin subir nada a ningún servidor.</p>
+</section>
+
+<div class="tool-box">
+  <a href="/" class="back-link">← Todas las herramientas</a>
+
+  <div class="drop-zone" id="dropZone">
+    <div class="drop-icon">🔐</div>
+    <div class="drop-title">Arrastra tu PDF aquí</div>
+    <div class="drop-sub">Formato .pdf</div>
+    <button class="btn-select" onclick="document.getElementById('file-input').click()">Seleccionar PDF</button>
+    <input type="file" id="file-input" accept=".pdf">
+  </div>
+
+  <div class="file-selected" id="fileSelected">
+    <div class="file-icon">📄</div>
+    <div class="file-info">
+      <div class="file-name" id="fileName">documento.pdf</div>
+      <div class="file-size" id="fileSize">0 KB</div>
+    </div>
+    <button class="file-remove" onclick="clearAll()">✕</button>
+  </div>
+
+  <div class="password-box" id="passwordBox">
+    <div class="pass-label">Contraseña para abrir el PDF:</div>
+    <div class="pass-input-row">
+      <input type="password" id="passInput" placeholder="Escribe una contraseña segura" oninput="checkStrength()">
+      <button class="toggle-pass" onclick="togglePass('passInput', this)">👁</button>
+    </div>
+    <div class="strength-bar-bg"><div class="strength-bar" id="strengthBar"></div></div>
+    <div class="strength-text" id="strengthText"></div>
+
+    <div class="pass-label" style="margin-top:1rem">Confirmar contraseña:</div>
+    <div class="pass-input-row">
+      <input type="password" id="passConfirm" placeholder="Repite la contraseña">
+      <button class="toggle-pass" onclick="togglePass('passConfirm', this)">👁</button>
+    </div>
+
+    <div class="perms-title">Permisos del documento:</div>
+    <div class="perm-item">
+      <input type="checkbox" id="permPrint" checked>
+      <label for="permPrint">Permitir imprimir <span>— el usuario puede imprimir el PDF</span></label>
+    </div>
+    <div class="perm-item">
+      <input type="checkbox" id="permCopy">
+      <label for="permCopy">Permitir copiar texto <span>— el usuario puede seleccionar y copiar</span></label>
+    </div>
+    <div class="perm-item">
+      <input type="checkbox" id="permEdit">
+      <label for="permEdit">Permitir editar <span>— el usuario puede modificar el PDF</span></label>
+    </div>
+
+    <div class="warn-box">⚠️ Guarda la contraseña en un lugar seguro. Si la olvidas, no podrás recuperar el acceso al PDF.</div>
+  </div>
+
+  <div class="actions" id="actions">
+    <button class="btn-convert" id="btnConvert" onclick="protegerPDF()">🔐 Proteger PDF</button>
+  </div>
+
+  <div class="progress" id="progress">
+    <div class="progress-bar-bg"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-text" id="progressText">Aplicando protección...</div>
+  </div>
+
+  <div class="result" id="result">
+    <div class="result-icon">🔐</div>
+    <div class="result-title">¡PDF protegido con éxito!</div>
+    <div class="result-sub">Tu archivo tiene contraseña. Nunca ha salido de tu navegador.</div>
+    <a class="btn-download" id="btnDownload" href="#" download="protegido.pdf">⬇️ Descargar PDF</a>
+    <button class="btn-new" onclick="clearAll()">Proteger otro</button>
+  </div>
+
+  <div class="privacy-note">
+    <div class="icon">🔒</div>
+    <p>Tu PDF <strong>nunca se sube a ningún servidor</strong>. La contraseña se aplica localmente en tu navegador. Ni nosotros ni nadie puede ver tu archivo o tu contraseña.</p>
+  </div>
+</div>
+
+<script>
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('file-input');
+  let selectedFile = null;
+
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
+  fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
+
+  function handleFile(file) {
+    if (!file || file.type !== 'application/pdf') { alert('Por favor selecciona un archivo PDF'); return; }
+    selectedFile = file;
+    document.getElementById('fileName').textContent = file.name;
+    document.getElementById('fileSize').textContent = formatSize(file.size);
+    document.getElementById('fileSelected').classList.add('visible');
+    document.getElementById('passwordBox').classList.add('visible');
+    document.getElementById('actions').style.display = 'block';
+    document.getElementById('result').style.display = 'none';
+  }
+
+  function clearAll() {
+    selectedFile = null;
+    document.getElementById('fileSelected').classList.remove('visible');
+    document.getElementById('passwordBox').classList.remove('visible');
+    document.getElementById('actions').style.display = 'none';
+    document.getElementById('progress').style.display = 'none';
+    document.getElementById('result').style.display = 'none';
+    document.getElementById('passInput').value = '';
+    document.getElementById('passConfirm').value = '';
+    document.getElementById('strengthBar').style.width = '0%';
+    document.getElementById('strengthText').textContent = '';
+    fileInput.value = '';
+  }
+
+  function togglePass(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') { input.type = 'text'; btn.textContent = '🙈'; }
+    else { input.type = 'password'; btn.textContent = '👁'; }
+  }
+
+  function checkStrength() {
+    const pass = document.getElementById('passInput').value;
+    const bar = document.getElementById('strengthBar');
+    const text = document.getElementById('strengthText');
+    let score = 0;
+    if (pass.length >= 8) score++;
+    if (pass.length >= 12) score++;
+    if (/[A-Z]/.test(pass)) score++;
+    if (/[0-9]/.test(pass)) score++;
+    if (/[^A-Za-z0-9]/.test(pass)) score++;
+    const levels = [
+      { w: '0%', c: 'transparent', t: '' },
+      { w: '25%', c: '#e53935', t: 'Muy débil' },
+      { w: '50%', c: '#fb8c00', t: 'Débil' },
+      { w: '75%', c: '#fdd835', t: 'Aceptable' },
+      { w: '90%', c: '#43a047', t: 'Fuerte' },
+      { w: '100%', c: '#00897b', t: 'Muy fuerte' },
+    ];
+    const l = levels[Math.min(score, 5)];
+    bar.style.width = l.w;
+    bar.style.background = l.c;
+    text.textContent = l.t;
+    text.style.color = l.c;
+  }
+
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+  }
+
+  async function protegerPDF() {
+    const pass = document.getElementById('passInput').value;
+    const passConfirm = document.getElementById('passConfirm').value;
+    if (!pass) { alert('Por favor escribe una contraseña'); return; }
+    if (pass !== passConfirm) { alert('Las contraseñas no coinciden'); return; }
+    if (pass.length < 4) { alert('La contraseña debe tener al menos 4 caracteres'); return; }
+
+    const btn = document.getElementById('btnConvert');
+    const progress = document.getElementById('progress');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+
+    btn.disabled = true;
+    progress.style.display = 'block';
+    document.getElementById('result').style.display = 'none';
+
+    progressBar.style.width = '30%';
+    progressText.textContent = 'Leyendo PDF...';
+
+    const arrayBuffer = await selectedFile.arrayBuffer();
+    const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+
+    progressBar.style.width = '70%';
+    progressText.textContent = 'Aplicando contraseña...';
+
+    const permPrint = document.getElementById('permPrint').checked;
+    const permCopy = document.getElementById('permCopy').checked;
+    const permEdit = document.getElementById('permEdit').checked;
+
+    const pdfBytes = await pdfDoc.save({
+      userPassword: pass,
+      ownerPassword: pass + '_owner_' + Math.random().toString(36).slice(2),
+      permissions: {
+        printing: permPrint ? 'highResolution' : 'none',
+        modifying: permEdit,
+        copying: permCopy,
+        annotating: permEdit,
+        fillingForms: permEdit,
+        contentAccessibility: true,
+        documentAssembly: permEdit,
+      }
+    });
+
+    progressBar.style.width = '100%';
+    progressText.textContent = '¡Listo!';
+
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const newName = 'protegido_' + selectedFile.name;
+    document.getElementById('btnDownload').href = url;
+    document.getElementById('btnDownload').download = newName;
+
+    progress.style.display = 'none';
+    document.getElementById('result').style.display = 'block';
+    btn.disabled = false;
+  }
+</script>
+
+</body>
+</html>
