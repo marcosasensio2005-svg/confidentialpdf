@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-N2EQE9X20T"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-N2EQE9X20T');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF a Word gratis y sin subir archivos | ConfidentialPDF</title>
+  <meta name="description" content="Convierte PDF a Word gratis. Tus archivos nunca se suben a ningún servidor. Todo ocurre en tu navegador.">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e8eaf0; min-height: 100vh; }
+    header { padding: 1.25rem 2rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1e2130; }
+    .logo { font-size: 1.1rem; font-weight: 600; color: #fff; text-decoration: none; }
+    .logo span { color: #4f8ef7; }
+    .badge { font-size: 12px; background: #1a2a1a; color: #4caf80; border: 1px solid #2a4a2a; padding: 4px 12px; border-radius: 20px; }
+    .hero { text-align: center; padding: 3rem 2rem 2rem; }
+    .hero h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .hero h1 span { color: #4f8ef7; }
+    .hero p { color: #8890a8; font-size: 1rem; max-width: 480px; margin: 0 auto; line-height: 1.6; }
+    .tool-box { max-width: 680px; margin: 2rem auto; padding: 0 1.5rem 4rem; }
+    .drop-zone { border: 2px dashed #2a3050; border-radius: 16px; padding: 3rem 2rem; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; background: #1a1f30; }
+    .drop-zone:hover, .drop-zone.dragover { border-color: #4f8ef7; background: #1a2040; }
+    .drop-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .drop-title { font-size: 1.1rem; font-weight: 500; margin-bottom: 0.5rem; }
+    .drop-sub { font-size: 0.9rem; color: #8890a8; margin-bottom: 1.5rem; }
+    .btn-select { background: #4f8ef7; color: #fff; border: none; padding: 0.75rem 2rem; border-radius: 8px; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+    .btn-select:hover { background: #3a7de8; }
+    #file-input { display: none; }
+    .file-selected { margin-top: 1.5rem; background: #1a1f30; border: 1px solid #2a3050; border-radius: 10px; padding: 1rem 1.25rem; display: none; align-items: center; gap: 12px; }
+    .file-selected.visible { display: flex; }
+    .file-icon { font-size: 2rem; flex-shrink: 0; }
+    .file-info { flex: 1; }
+    .file-name { font-size: 14px; font-weight: 500; color: #e8eaf0; }
+    .file-size { font-size: 12px; color: #8890a8; margin-top: 2px; }
+    .file-remove { background: none; border: none; color: #8890a8; cursor: pointer; font-size: 18px; }
+    .warning-note { background: #1a1500; border: 1px solid #3a3000; border-radius: 10px; padding: 1rem 1.25rem; margin-top: 1rem; display: flex; gap: 10px; align-items: flex-start; }
+    .warning-note p { font-size: 13px; color: #9a8a40; line-height: 1.5; }
+    .actions { margin-top: 1.5rem; display: none; }
+    .btn-convert { background: #4caf80; color: #fff; border: none; padding: 0.85rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; width: 100%; }
+    .btn-convert:hover { background: #3d9e70; }
+    .btn-convert:disabled { background: #2a4a3a; color: #4a7a5a; cursor: not-allowed; }
+    .progress { margin-top: 1.25rem; display: none; }
+    .progress-bar-bg { background: #1a1f30; border-radius: 8px; height: 8px; overflow: hidden; }
+    .progress-bar { background: #4f8ef7; height: 100%; border-radius: 8px; transition: width 0.3s; width: 0%; }
+    .progress-text { font-size: 13px; color: #8890a8; margin-top: 8px; text-align: center; }
+    .result { display: none; margin-top: 1.5rem; background: #1a2a1a; border: 1px solid #2a4a2a; border-radius: 12px; padding: 1.5rem; text-align: center; }
+    .result-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .result-title { font-size: 1.1rem; font-weight: 600; color: #4caf80; margin-bottom: 0.5rem; }
+    .result-sub { font-size: 0.9rem; color: #8890a8; margin-bottom: 1.25rem; }
+    .btn-download { background: #4caf80; color: #fff; border: none; padding: 0.85rem 2.5rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn-download:hover { background: #3d9e70; }
+    .btn-new { background: transparent; color: #4f8ef7; border: 1px solid #4f8ef7; padding: 0.85rem 1.5rem; border-radius: 8px; font-size: 0.9rem; cursor: pointer; margin-left: 10px; }
+    .privacy-note { background: #0f1a0f; border: 1px solid #1a3a1a; border-radius: 10px; padding: 1rem 1.25rem; margin-top: 2rem; display: flex; gap: 10px; align-items: flex-start; }
+    .privacy-note .icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+    .privacy-note p { font-size: 13px; color: #6a9a6a; line-height: 1.5; }
+    .back-link { display: inline-block; color: #8890a8; text-decoration: none; font-size: 13px; margin-bottom: 1rem; }
+    .back-link:hover { color: #e8eaf0; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="logo">Confidential<span>PDF</span></a>
+  <div class="badge">🔒 Sin subir archivos</div>
+</header>
+
+<section class="hero">
+  <h1>PDF a <span>Word</span> gratis</h1>
+  <p>Extrae el texto de tu PDF y conviértelo en un documento Word editable. Todo ocurre en tu navegador, sin subir nada a ningún servidor.</p>
+</section>
+
+<div class="tool-box">
+  <a href="/" class="back-link">← Todas las herramientas</a>
+
+  <div class="drop-zone" id="dropZone">
+    <div class="drop-icon">📄</div>
+    <div class="drop-title">Arrastra tu PDF aquí</div>
+    <div class="drop-sub">Formato .pdf</div>
+    <button class="btn-select" onclick="document.getElementById('file-input').click()">Seleccionar PDF</button>
+    <input type="file" id="file-input" accept=".pdf">
+  </div>
+
+  <div class="file-selected" id="fileSelected">
+    <div class="file-icon">📄</div>
+    <div class="file-info">
+      <div class="file-name" id="fileName">documento.pdf</div>
+      <div class="file-size" id="fileSize">0 KB</div>
+    </div>
+    <button class="file-remove" onclick="clearAll()">✕</button>
+  </div>
+
+  <div class="warning-note" style="margin-top:1rem">
+    <div>⚠️</div>
+    <p>Esta herramienta extrae el texto del PDF y genera un documento Word editable. Funciona muy bien con PDFs de texto. Para PDFs escaneados o con mucho diseño, el resultado puede ser más básico.</p>
+  </div>
+
+  <div class="actions" id="actions">
+    <button class="btn-convert" id="btnConvert" onclick="convertirAWord()">📝 Convertir a Word</button>
+  </div>
+
+  <div class="progress" id="progress">
+    <div class="progress-bar-bg"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-text" id="progressText">Extrayendo texto...</div>
+  </div>
+
+  <div class="result" id="result">
+    <div class="result-icon">✅</div>
+    <div class="result-title">¡Documento Word creado!</div>
+    <div class="result-sub">Tu archivo está listo. Nunca ha salido de tu navegador.</div>
+    <a class="btn-download" id="btnDownload" href="#" download="documento.docx">⬇️ Descargar Word</a>
+    <button class="btn-new" onclick="clearAll()">Convertir otro</button>
+  </div>
+
+  <div class="privacy-note">
+    <div class="icon">🔒</div>
+    <p>Tu PDF <strong>nunca se sube a ningún servidor</strong>. Todo el proceso ocurre localmente en tu navegador. Ni nosotros ni nadie puede ver tu archivo.</p>
+  </div>
+</div>
+
+<section style="max-width:680px;margin:0 auto;padding:0 1.5rem 4rem;color:#8890a8;font-size:14px;line-height:1.8;">
+  <h2 style="color:#e8eaf0;font-size:1.2rem;font-weight:600;margin-bottom:1rem;">¿Cómo convertir PDF a Word gratis y sin subir archivos?</h2>
+  <p>Con ConfidentialPDF puedes convertir cualquier PDF a un documento Word editable directamente en tu navegador, sin registrarte ni instalar nada. Tu archivo nunca se sube a ningún servidor.</p>
+
+  <h2 style="color:#e8eaf0;font-size:1.2rem;font-weight:600;margin:1.5rem 0 1rem;">¿Por qué usar ConfidentialPDF para convertir PDF a Word?</h2>
+  <ul style="padding-left:1.25rem;margin-bottom:1rem;">
+    <li style="margin-bottom:0.5rem"><strong style="color:#e8eaf0;">100% gratuito</strong> — sin límites ni marcas de agua</li>
+    <li style="margin-bottom:0.5rem"><strong style="color:#e8eaf0;">Sin registro</strong> — no necesitas crear ninguna cuenta</li>
+    <li style="margin-bottom:0.5rem"><strong style="color:#e8eaf0;">Sin subir archivos</strong> — tu PDF nunca sale de tu ordenador</li>
+    <li style="margin-bottom:0.5rem"><strong style="color:#e8eaf0;">Texto editable</strong> — el resultado es un .docx que puedes editar en Word o Google Docs</li>
+    <li style="margin-bottom:0.5rem"><strong style="color:#e8eaf0;">Ideal para reutilizar contenido</strong> — extrae texto de contratos, informes o artículos</li>
+  </ul>
+
+  <h2 style="color:#e8eaf0;font-size:1.2rem;font-weight:600;margin:1.5rem 0 1rem;">Preguntas frecuentes</h2>
+  <p><strong style="color:#e8eaf0;">¿Es seguro convertir PDF a Word aquí?</strong><br>
+  Sí, completamente. A diferencia de Smallpdf o iLovePDF, tu archivo nunca se sube a ningún servidor. Todo ocurre localmente en tu navegador.</p>
+
+  <p style="margin-top:1rem"><strong style="color:#e8eaf0;">¿Funciona con PDFs escaneados?</strong><br>
+  Para PDFs escaneados el resultado puede ser más básico ya que son imágenes, no texto. Funciona mejor con PDFs generados digitalmente.</p>
+
+  <p style="margin-top:1rem"><strong style="color:#e8eaf0;">¿El documento Word mantiene el formato original?</strong><br>
+  Se extrae el texto con su estructura básica. El formato exacto puede variar respecto al PDF original.</p>
+
+  <p style="margin-top:1rem"><strong style="color:#e8eaf0;">¿Funciona en móvil?</strong><br>
+  Sí, ConfidentialPDF funciona en cualquier dispositivo con navegador: ordenador, iPhone, Android o tablet.</p>
+</section>
+
+<script>
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('file-input');
+  let selectedFile = null;
+
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
+  fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
+
+  function handleFile(file) {
+    if (!file || file.type !== 'application/pdf') { alert('Por favor selecciona un archivo PDF'); return; }
+    selectedFile = file;
+    document.getElementById('fileName').textContent = file.name;
+    document.getElementById('fileSize').textContent = formatSize(file.size);
+    document.getElementById('fileSelected').classList.add('visible');
+    document.getElementById('actions').style.display = 'block';
+    document.getElementById('result').style.display = 'none';
+  }
+
+  function clearAll() {
+    selectedFile = null;
+    document.getElementById('fileSelected').classList.remove('visible');
+    document.getElementById('actions').style.display = 'none';
+    document.getElementById('progress').style.display = 'none';
+    document.getElementById('result').style.display = 'none';
+    fileInput.value = '';
+  }
+
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+  }
+
+  async function convertirAWord() {
+    if (!selectedFile) return;
+    const btn = document.getElementById('btnConvert');
+    const progress = document.getElementById('progress');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+
+    btn.disabled = true;
+    progress.style.display = 'block';
+    document.getElementById('result').style.display = 'none';
+
+    progressBar.style.width = '20%';
+    progressText.textContent = 'Leyendo PDF...';
+
+    const arrayBuffer = await selectedFile.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const totalPages = pdf.numPages;
+
+    let fullText = '';
+    for (let i = 1; i <= totalPages; i++) {
+      progressBar.style.width = `${20 + ((i / totalPages) * 60)}%`;
+      progressText.textContent = `Extrayendo texto página ${i} de ${totalPages}...`;
+      const page = await pdf.getPage(i);
+      const textContent = await page.getTextContent();
+      const pageText = textContent.items.map(item => item.str).join(' ');
+      fullText += pageText + '\n\n';
+    }
+
+    progressBar.style.width = '90%';
+    progressText.textContent = 'Generando documento Word...';
+
+    const docxContent = generateDocx(fullText, selectedFile.name);
+    const blob = new Blob([docxContent], {
+      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    });
+    const url = URL.createObjectURL(blob);
+    const newName = selectedFile.name.replace('.pdf', '.docx');
+
+    document.getElementById('btnDownload').href = url;
+    document.getElementById('btnDownload').download = newName;
+
+    progressBar.style.width = '100%';
+    progressText.textContent = '¡Listo!';
+    progress.style.display = 'none';
+    document.getElementById('result').style.display = 'block';
+    btn.disabled = false;
+  }
+
+  function generateDocx(text, filename) {
+    const paragraphs = text.split('\n').filter(p => p.trim().length > 0);
+    const xmlParagraphs = paragraphs.map(p => `
+      <w:p>
+        <w:r>
+          <w:rPr><w:sz w:val="24"/></w:rPr>
+          <w:t xml:space="preserve">${escapeXml(p)}</w:t>
+        </w:r>
+      </w:p>`).join('');
+
+    const documentXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    ${xmlParagraphs}
+    <w:sectPr>
+      <w:pgSz w:w="12240" w:h="15840"/>
+      <w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440"/>
+    </w:sectPr>
+  </w:body>
+</w:document>`;
+
+    const relsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>`;
+
+    const wordRelsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+</Relationships>`;
+
+    const contentTypesXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+</Types>`;
+
+    return createZip({
+      '[Content_Types].xml': contentTypesXml,
+      '_rels/.rels': relsXml,
+      'word/document.xml': documentXml,
+      'word/_rels/document.xml.rels': wordRelsXml
+    });
+  }
+
+  function escapeXml(str) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+  }
+
+  function createZip(files) {
+    const parts = [];
+    const centralDir = [];
+    let offset = 0;
+
+    function crc32(data) {
+      const table = new Uint32Array(256);
+      for (let i = 0; i < 256; i++) {
+        let c = i;
+        for (let j = 0; j < 8; j++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+        table[i] = c;
+      }
+      let crc = 0xFFFFFFFF;
+      const bytes = new TextEncoder().encode(data);
+      for (const byte of bytes) crc = table[(crc ^ byte) & 0xFF] ^ (crc >>> 8);
+      return (crc ^ 0xFFFFFFFF) >>> 0;
+    }
+
+    function str2bytes(str) { return new TextEncoder().encode(str); }
+    function num2bytes(num, size) {
+      const arr = new Uint8Array(size);
+      for (let i = 0; i < size; i++) { arr[i] = num & 0xFF; num >>= 8; }
+      return arr;
+    }
+
+    for (const [name, content] of Object.entries(files)) {
+      const nameBytes = str2bytes(name);
+      const contentBytes = str2bytes(content);
+      const crc = crc32(content);
+      const localHeader = new Uint8Array([
+        0x50, 0x4B, 0x03, 0x04, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        ...num2bytes(crc, 4),
+        ...num2bytes(contentBytes.length, 4),
+        ...num2bytes(contentBytes.length, 4),
+        ...num2bytes(nameBytes.length, 2),
+        0, 0,
+        ...nameBytes
+      ]);
+      parts.push(localHeader, contentBytes);
+      centralDir.push({ name: nameBytes, crc, size: contentBytes.length, offset });
+      offset += localHeader.length + contentBytes.length;
+    }
+
+    const centralDirParts = centralDir.map(({ name, crc, size, offset }) => new Uint8Array([
+      0x50, 0x4B, 0x01, 0x02, 20, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      ...num2bytes(crc, 4),
+      ...num2bytes(size, 4),
+      ...num2bytes(size, 4),
+      ...num2bytes(name.length, 2),
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      ...num2bytes(offset, 4),
+      ...name
+    ]));
+
+    const centralDirSize = centralDirParts.reduce((s, p) => s + p.length, 0);
+    const endRecord = new Uint8Array([
+      0x50, 0x4B, 0x05, 0x06, 0, 0, 0, 0,
+      ...num2bytes(centralDir.length, 2),
+      ...num2bytes(centralDir.length, 2),
+      ...num2bytes(centralDirSize, 4),
+      ...num2bytes(offset, 4),
+      0, 0
+    ]);
+
+    const allParts = [...parts, ...centralDirParts, endRecord];
+    const totalSize = allParts.reduce((s, p) => s + p.length, 0);
+    const result = new Uint8Array(totalSize);
+    let pos = 0;
+    for (const part of allParts) { result.set(part, pos); pos += part.length; }
+    return result;
+  }
+</script>
+
+</body>
+</html>
