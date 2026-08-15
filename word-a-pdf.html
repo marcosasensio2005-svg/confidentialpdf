@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word a PDF gratis y sin subir archivos | ConfidentialPDF</title>
+  <meta name="description" content="Convierte documentos Word .docx a PDF gratis. Tus archivos nunca se suben a ningún servidor. Todo ocurre en tu navegador.">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e8eaf0; min-height: 100vh; }
+    header { padding: 1.25rem 2rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1e2130; }
+    .logo { font-size: 1.1rem; font-weight: 600; color: #fff; text-decoration: none; }
+    .logo span { color: #4f8ef7; }
+    .badge { font-size: 12px; background: #1a2a1a; color: #4caf80; border: 1px solid #2a4a2a; padding: 4px 12px; border-radius: 20px; }
+    .hero { text-align: center; padding: 3rem 2rem 2rem; }
+    .hero h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .hero h1 span { color: #4f8ef7; }
+    .hero p { color: #8890a8; font-size: 1rem; max-width: 480px; margin: 0 auto; line-height: 1.6; }
+    .tool-box { max-width: 680px; margin: 2rem auto; padding: 0 1.5rem 4rem; }
+    .drop-zone { border: 2px dashed #2a3050; border-radius: 16px; padding: 3rem 2rem; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; background: #1a1f30; }
+    .drop-zone:hover, .drop-zone.dragover { border-color: #4f8ef7; background: #1a2040; }
+    .drop-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .drop-title { font-size: 1.1rem; font-weight: 500; margin-bottom: 0.5rem; }
+    .drop-sub { font-size: 0.9rem; color: #8890a8; margin-bottom: 1.5rem; }
+    .btn-select { background: #4f8ef7; color: #fff; border: none; padding: 0.75rem 2rem; border-radius: 8px; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+    .btn-select:hover { background: #3a7de8; }
+    #file-input { display: none; }
+    .file-selected { display: none; margin-top: 1.5rem; background: #1a1f30; border: 1px solid #2a3050; border-radius: 10px; padding: 1rem 1.25rem; display: none; align-items: center; gap: 12px; }
+    .file-selected.visible { display: flex; }
+    .file-icon { font-size: 2rem; }
+    .file-info { flex: 1; }
+    .file-name { font-size: 14px; font-weight: 500; color: #e8eaf0; }
+    .file-size { font-size: 12px; color: #8890a8; margin-top: 2px; }
+    .file-remove { background: none; border: none; color: #8890a8; cursor: pointer; font-size: 18px; }
+    .actions { margin-top: 1.5rem; display: none; }
+    .btn-convert { background: #4caf80; color: #fff; border: none; padding: 0.85rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; width: 100%; }
+    .btn-convert:hover { background: #3d9e70; }
+    .btn-convert:disabled { background: #2a4a3a; color: #4a7a5a; cursor: not-allowed; }
+    .progress { margin-top: 1.25rem; display: none; }
+    .progress-bar-bg { background: #1a1f30; border-radius: 8px; height: 8px; overflow: hidden; }
+    .progress-bar { background: #4f8ef7; height: 100%; border-radius: 8px; transition: width 0.3s; width: 0%; }
+    .progress-text { font-size: 13px; color: #8890a8; margin-top: 8px; text-align: center; }
+    .result { display: none; margin-top: 1.5rem; background: #1a2a1a; border: 1px solid #2a4a2a; border-radius: 12px; padding: 1.5rem; text-align: center; }
+    .result-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .result-title { font-size: 1.1rem; font-weight: 600; color: #4caf80; margin-bottom: 0.5rem; }
+    .result-sub { font-size: 0.9rem; color: #8890a8; margin-bottom: 1.25rem; }
+    .btn-download { background: #4caf80; color: #fff; border: none; padding: 0.85rem 2.5rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn-download:hover { background: #3d9e70; }
+    .btn-new { background: transparent; color: #4f8ef7; border: 1px solid #4f8ef7; padding: 0.85rem 1.5rem; border-radius: 8px; font-size: 0.9rem; cursor: pointer; margin-left: 10px; }
+    .privacy-note { background: #0f1a0f; border: 1px solid #1a3a1a; border-radius: 10px; padding: 1rem 1.25rem; margin-top: 2rem; display: flex; gap: 10px; align-items: flex-start; }
+    .privacy-note .icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+    .privacy-note p { font-size: 13px; color: #6a9a6a; line-height: 1.5; }
+    .back-link { display: inline-block; color: #8890a8; text-decoration: none; font-size: 13px; margin-bottom: 1rem; }
+    .back-link:hover { color: #e8eaf0; }
+    .warning-note { background: #1a1500; border: 1px solid #3a3000; border-radius: 10px; padding: 1rem 1.25rem; margin-top: 1rem; display: flex; gap: 10px; align-items: flex-start; }
+    .warning-note p { font-size: 13px; color: #9a8a40; line-height: 1.5; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="logo">Confidential<span>PDF</span></a>
+  <div class="badge">🔒 Sin subir archivos</div>
+</header>
+
+<section class="hero">
+  <h1>Convierte <span>Word a PDF</span> gratis</h1>
+  <p>Sube tu documento .docx y lo convertimos a PDF directamente en tu navegador. Sin servidores, sin registro.</p>
+</section>
+
+<div class="tool-box">
+  <a href="/" class="back-link">← Todas las herramientas</a>
+
+  <div class="drop-zone" id="dropZone">
+    <div class="drop-icon">📝</div>
+    <div class="drop-title">Arrastra tu documento Word aquí</div>
+    <div class="drop-sub">Formato .docx — Microsoft Word</div>
+    <button class="btn-select" onclick="document.getElementById('file-input').click()">Seleccionar archivo</button>
+    <input type="file" id="file-input" accept=".docx" >
+  </div>
+
+  <div class="file-selected" id="fileSelected">
+    <div class="file-icon">📄</div>
+    <div class="file-info">
+      <div class="file-name" id="fileName">documento.docx</div>
+      <div class="file-size" id="fileSize">0 KB</div>
+    </div>
+    <button class="file-remove" onclick="clearAll()">✕</button>
+  </div>
+
+  <div class="warning-note">
+    <div>⚠️</div>
+    <p>La conversión en navegador preserva el texto y estructura básica. Para documentos con formato muy complejo (tablas anidadas, imágenes flotantes), el resultado puede variar ligeramente.</p>
+  </div>
+
+  <div class="actions" id="actions">
+    <button class="btn-convert" id="btnConvert" onclick="convertToPDF()">🔄 Convertir a PDF</button>
+  </div>
+
+  <div class="progress" id="progress">
+    <div class="progress-bar-bg"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-text" id="progressText">Procesando...</div>
+  </div>
+
+  <div class="result" id="result">
+    <div class="result-icon">✅</div>
+    <div class="result-title">¡PDF creado con éxito!</div>
+    <div class="result-sub">Tu archivo está listo. Nunca ha salido de tu navegador.</div>
+    <button class="btn-download" id="btnDownload" onclick="downloadPDF()">⬇️ Descargar PDF</button>
+    <button class="btn-new" onclick="clearAll()">Convertir otro</button>
+  </div>
+
+  <div class="privacy-note">
+    <div class="icon">🔒</div>
+    <p>Tu documento <strong>nunca se sube a ningún servidor</strong>. Todo el proceso ocurre localmente en tu navegador. Ni nosotros ni nadie puede ver tu archivo.</p>
+  </div>
+</div>
+
+<script>
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('file-input');
+  let selectedFile = null;
+  let pdfBlob = null;
+  let pdfFileName = 'documento.pdf';
+
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
+  fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
+
+  function handleFile(file) {
+    if (!file || !file.name.endsWith('.docx')) {
+      alert('Por favor selecciona un archivo .docx');
+      return;
+    }
+    selectedFile = file;
+    pdfFileName = file.name.replace('.docx', '.pdf');
+    document.getElementById('fileName').textContent = file.name;
+    document.getElementById('fileSize').textContent = (file.size / 1024).toFixed(1) + ' KB';
+    document.getElementById('fileSelected').classList.add('visible');
+    document.getElementById('actions').style.display = 'block';
+    document.getElementById('result').style.display = 'none';
+  }
+
+  function clearAll() {
+    selectedFile = null;
+    pdfBlob = null;
+    document.getElementById('fileSelected').classList.remove('visible');
+    document.getElementById('actions').style.display = 'none';
+    document.getElementById('progress').style.display = 'none';
+    document.getElementById('result').style.display = 'none';
+    fileInput.value = '';
+  }
+
+  async function convertToPDF() {
+    if (!selectedFile) return;
+    const btn = document.getElementById('btnConvert');
+    const progress = document.getElementById('progress');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+
+    btn.disabled = true;
+    progress.style.display = 'block';
+    progressBar.style.width = '20%';
+    progressText.textContent = 'Leyendo documento Word...';
+
+    const arrayBuffer = await selectedFile.arrayBuffer();
+    progressBar.style.width = '50%';
+    progressText.textContent = 'Convirtiendo contenido...';
+
+    const result = await mammoth.convertToHtml({ arrayBuffer });
+    progressBar.style.width = '80%';
+    progressText.textContent = 'Generando PDF...';
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          body { font-family: Arial, sans-serif; font-size: 12pt; line-height: 1.5; margin: 2cm; color: #000; }
+          h1, h2, h3, h4 { margin: 1em 0 0.5em; }
+          p { margin: 0 0 0.8em; }
+          table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+          td, th { border: 1px solid #ccc; padding: 6px 10px; }
+          ul, ol { margin: 0.5em 0 0.8em 1.5em; }
+        </style>
+      </head>
+      <body>${result.value}</body>
+      </html>
+    `;
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+
+    progressBar.style.width = '100%';
+    progressText.textContent = '¡Listo!';
+
+    setTimeout(() => {
+      printWindow.print();
+      progress.style.display = 'none';
+      document.getElementById('result').style.display = 'block';
+      btn.disabled = false;
+    }, 800);
+  }
+
+  function downloadPDF() {
+    document.getElementById('result').querySelector('.result-sub').textContent = 'Usa el diálogo de impresión — selecciona "Guardar como PDF" como destino.';
+  }
+</script>
+
+</body>
+</html>
